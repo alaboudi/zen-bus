@@ -1,4 +1,5 @@
 {
+  "keywords": ["event bus", "pub/sub", "pubsub", "reactive programming"],
   "version": "0.2.0",
   "license": "MIT",
   "main": "dist/index.js",
