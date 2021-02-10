@@ -44,7 +44,7 @@ eventBus.emit(todoAddedEvent);
 
 ### Publish An Event Synchronously
 By default, events are published asynchronously. You can also force the emission
-to be synchronous if you'd like
+to be synchronous if you'd like.
 ```javascript
 const todoAddedEvent = {
     type: 'Todo Added',
@@ -54,7 +54,7 @@ const todoAddedEvent = {
 eventBus.emitSync(todoAddedEvent);
 ```
 
-*Note:* Be careful of emitting events synchronously. It has a few disadvantages:
+**Note:** Be careful of emitting events synchronously. It has a few disadvantages:
 
 - It locks up the thread up until all handlers have been executed
 - Strange sequences may occur if you decide to emit another event as part of
