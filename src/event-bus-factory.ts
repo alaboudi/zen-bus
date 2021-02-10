@@ -1,4 +1,4 @@
-import EventBus from "./event-bus";
+import EventBus from './event-bus';
 
 const createEventBus = () => new EventBus();
 
