@@ -1,10 +1,15 @@
 {
-  "keywords": ["event bus", "pub/sub", "pubsub", "reactive programming"],
+  "keywords": [
+    "event bus",
+    "pub/sub",
+    "pubsub",
+    "reactive programming"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/alaboudi/zen-bus"
   },
-  "version": "0.2.0",
+  "version": "0.2.1",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
