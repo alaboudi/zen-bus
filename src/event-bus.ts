@@ -38,6 +38,11 @@ class EventBus {
         return tokens.map(token => this.tokenToHandlerMap.get(token)!)
     }
 
+    private executeHandlers<T extends Event>(event: T) {
+        const handlers = this.getEventTypeHandlers(event.type);
+        handlers.forEach(handler => handler(event));
+    }
+
     constructor() {}
 
     subscribe<T extends Event>(eventType: EventType<T>, handler: EventHandler<T>) {
@@ -48,8 +53,11 @@ class EventBus {
     }
 
     emit<T extends Event>(event: T) {
-        const handlers = this.getEventTypeHandlers(event.type);
-        handlers.forEach(handler => handler(event));
+        setTimeout(() => this.executeHandlers(event), 0);
+    }
+
+    emitSync<T extends Event>(event: T) {
+        this.executeHandlers(event);
     }
 }
 
