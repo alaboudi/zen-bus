@@ -1,10 +1,17 @@
-interface Event {
+export interface Event {
   type: string;
+}
+export type EventType<T extends Event> = T['type'];
+
+export interface EventHandler<T extends Event> {
+  (event: T): void;
+}
+
+export interface Unsubscriber {
+  (): void;
 }
 
 type Token = Symbol;
-type EventType<T extends Event> = T['type'];
-type EventHandler<T extends Event> = (event: T) => void;
 
 class EventBus {
   private tokenToHandlerMap = new Map<Token, EventHandler<any>>();
@@ -50,7 +57,7 @@ class EventBus {
   subscribe<T extends Event>(
     eventType: EventType<T>,
     handler: EventHandler<T>
-  ) {
+  ): Unsubscriber {
     const token = Symbol();
     this.tokenToHandlerMap.set(token, handler);
     this.addTokenToEventTypeMap(eventType, token);
