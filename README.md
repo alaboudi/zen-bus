@@ -19,7 +19,7 @@ const eventBus = createEventBus();
 
 //you can also use a class if you are an OO person
 import { EventBus } from "@zenstack/zen-bus";
-const eventBus = new EventBus
+const eventBus = new EventBus();
 ```
 
 ### Subscribe To An Event
