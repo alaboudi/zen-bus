@@ -62,4 +62,21 @@ describe('EventBus', () => {
     jest.runAllTimers();
     expect(fn1).toBeCalledTimes(0);
   });
+
+  it('should trigger a handler when any event is emitted if it is subscribed to any event', () => {
+    const event1 = { type: 'Event 1' };
+    const event2 = { type: 'Event 2' };
+    const eventBus = new EventBus();
+    const fn = jest.fn();
+
+    eventBus.subscribe(EventBus.ANY_EVENT_TYPE, fn);
+    eventBus.emit(event1);
+    eventBus.emit(event2);
+
+    jest.runAllTimers();
+
+    expect(fn).toBeCalledTimes(2);
+    expect(fn).toBeCalledWith(event1);
+    expect(fn).toBeCalledWith(event2);
+  });
 });

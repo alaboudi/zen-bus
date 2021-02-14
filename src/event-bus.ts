@@ -14,6 +14,7 @@ export interface Unsubscriber {
 type Token = Symbol;
 
 class EventBus {
+  static ANY_EVENT_TYPE = Symbol('Any Event Type') as EventType<any>;
   private tokenToHandlerMap = new Map<Token, EventHandler<any>>();
   private eventTypeToTokensMap = new Map<EventType<any>, Token[]>();
 
@@ -40,15 +41,22 @@ class EventBus {
     this.removeTokenFromEventTypeMap(eventType, token);
   }
 
-  private getEventTypeHandlers<T extends Event>(
+  private getTokensForEventType<T extends Event>(eventType: EventType<T>) {
+    return this.eventTypeToTokensMap.get(eventType) || [];
+  }
+
+  private getHandlersForEventType<T extends Event>(
     eventType: EventType<T>
   ): EventHandler<T>[] {
-    const tokens = this.eventTypeToTokensMap.get(eventType) || [];
+    const eventTypeSpecificTokens = this.getTokensForEventType(eventType);
+    const anyEventTypeTokens = this.getTokensForEventType(EventBus.ANY_EVENT_TYPE);
+    const tokens = [...eventTypeSpecificTokens, ...anyEventTypeTokens];
+
     return tokens.map(token => this.tokenToHandlerMap.get(token)!);
   }
 
   private executeHandlers<T extends Event>(event: T) {
-    const handlers = this.getEventTypeHandlers(event.type);
+    const handlers = this.getHandlersForEventType(event.type);
     handlers.forEach(handler => handler(event));
   }
 
