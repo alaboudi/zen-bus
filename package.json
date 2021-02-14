@@ -9,7 +9,7 @@
     "type": "git",
     "url": "https://github.com/alaboudi/zen-bus"
   },
-  "version": "0.3.1",
+  "version": "0.4.1",
   "license": "MIT",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
