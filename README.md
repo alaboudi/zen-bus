@@ -22,7 +22,8 @@ import { EventBus } from "@zenstack/zen-bus";
 const eventBus = new EventBus();
 ```
 
-### Subscribe To An Event
+### Subscribe To Particular Event
+To subscribe a handler to an event type, you can use the `.subscribe(:eventType, :handler)` method.
 ```javascript
 const myTodoList = ['Clean Toilet'];
 const addToList = (event) => myTodoList.push(event.title);
@@ -32,7 +33,21 @@ eventBus.subscribe('Todo Added', addToList);
 eventBus.subscribe('Todo Added', logEvent);
 ```
 
-### Publish An Event
+### Subscribe To Any Event
+If you would like to subscribe a handler to any event type, you can use
+the EventBus's `ANY_EVENT_TYPE` static property.
+```javascript
+import { EventBus } from "@zenstack/zen-bus";
+
+const logEvent = (event) => console.log(event);
+
+// this will trigger `logEvent` when any event is emitted.
+eventBus.subscribe(EventBus.ANY_EVENT_TYPE, addToList);
+```
+
+### Emit An Event
+An event is an object that contains a string `type` attribute. You can asynchronously emit an event
+by using the event bus's `.emit(:event)` method.
 ```javascript
 const todoAddedEvent = {
     type: 'Todo Added',
@@ -42,8 +57,8 @@ const todoAddedEvent = {
 eventBus.emit(todoAddedEvent);
 ```
 
-### Publish An Event Synchronously
-By default, events are published asynchronously. You can also force the emission
+### Emit An Event Synchronously
+By default, events are emitted asynchronously. You can also force the emission
 to be synchronous if you'd like.
 ```javascript
 const todoAddedEvent = {
