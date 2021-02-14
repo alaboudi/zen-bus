@@ -15,25 +15,45 @@ type Token = Symbol;
 
 class EventBus {
   static ANY_EVENT_TYPE = Symbol('Any Event Type') as EventType<any>;
+
   private tokenToHandlerMap = new Map<Token, EventHandler<any>>();
   private eventTypeToTokensMap = new Map<EventType<any>, Token[]>();
 
+  private getEventTypeTokens<T extends Event>(eventType: EventType<T>): Token[] {
+    return this.eventTypeToTokensMap.get(eventType) || [];
+  }
+
+  private getAnyEventTypeTokens(): Token[] {
+    return this.eventTypeToTokensMap.get(EventBus.ANY_EVENT_TYPE) || [];
+  }
+
+  private getHandlersForTokens(tokens: Token[]): EventHandler<any>[] {
+    return tokens.map(token => this.tokenToHandlerMap.get(token)!);
+  }
+
+  private getTokensForEventTypeEmission<T extends Event>(eventType: EventType<T>): Token[] {
+    const eventTypeSpecificTokens = this.getEventTypeTokens(eventType);
+    const anyEventTypeTokens = this.getAnyEventTypeTokens();
+    return [...eventTypeSpecificTokens, ...anyEventTypeTokens];
+  }
+
+  private cleanupEventTypeMap<T extends Event>(eventType: EventType<T>): void {
+    const tokens = this.getEventTypeTokens(eventType);
+    if (tokens.length === 0) {
+      this.eventTypeToTokensMap.delete(eventType);
+    }
+  }
+
   private addTokenToEventTypeMap(eventType: EventType<any>, token: Token) {
-    const tokens = this.eventTypeToTokensMap.get(eventType) || [];
-    tokens.push(token);
-    this.eventTypeToTokensMap.set(eventType, tokens);
+    const tokens = this.getEventTypeTokens(eventType);
+    this.eventTypeToTokensMap.set(eventType, [...tokens, token]);
   }
 
   private removeTokenFromEventTypeMap(eventType: EventType<any>, token: Token) {
-    const tokens = this.eventTypeToTokensMap.get(eventType);
-    if (tokens !== undefined) {
-      const tokenIndex = tokens.indexOf(token);
-      tokens.splice(tokenIndex, 1);
-
-      if (tokens.length === 0) {
-        this.eventTypeToTokensMap.delete(eventType);
-      }
-    }
+    const tokens = this.getEventTypeTokens(eventType);
+    const tokenIndex = tokens.indexOf(token);
+    tokens.splice(tokenIndex, 1);
+    this.cleanupEventTypeMap(eventType);
   }
 
   private unsubscribeHandler(eventType: EventType<any>, token: Symbol) {
@@ -41,18 +61,11 @@ class EventBus {
     this.removeTokenFromEventTypeMap(eventType, token);
   }
 
-  private getTokensForEventType<T extends Event>(eventType: EventType<T>) {
-    return this.eventTypeToTokensMap.get(eventType) || [];
-  }
-
   private getHandlersForEventType<T extends Event>(
     eventType: EventType<T>
   ): EventHandler<T>[] {
-    const eventTypeSpecificTokens = this.getTokensForEventType(eventType);
-    const anyEventTypeTokens = this.getTokensForEventType(EventBus.ANY_EVENT_TYPE);
-    const tokens = [...eventTypeSpecificTokens, ...anyEventTypeTokens];
-
-    return tokens.map(token => this.tokenToHandlerMap.get(token)!);
+    const tokens = this.getTokensForEventTypeEmission(eventType);
+    return this.getHandlersForTokens(tokens);
   }
 
   private executeHandlers<T extends Event>(event: T) {
