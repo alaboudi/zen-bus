@@ -19,7 +19,9 @@ class EventBus {
   private tokenToHandlerMap = new Map<Token, EventHandler<any>>();
   private eventTypeToTokensMap = new Map<EventType<any>, Token[]>();
 
-  private getEventTypeTokens<T extends Event>(eventType: EventType<T>): Token[] {
+  private getEventTypeTokens<T extends Event>(
+    eventType: EventType<T>
+  ): Token[] {
     return this.eventTypeToTokensMap.get(eventType) || [];
   }
 
@@ -31,7 +33,9 @@ class EventBus {
     return tokens.map(token => this.tokenToHandlerMap.get(token)!);
   }
 
-  private getTokensForEventTypeEmission<T extends Event>(eventType: EventType<T>): Token[] {
+  private getTokensForEventTypeEmission<T extends Event>(
+    eventType: EventType<T>
+  ): Token[] {
     const eventTypeSpecificTokens = this.getEventTypeTokens(eventType);
     const anyEventTypeTokens = this.getAnyEventTypeTokens();
     return [...eventTypeSpecificTokens, ...anyEventTypeTokens];
@@ -72,8 +76,6 @@ class EventBus {
     const handlers = this.getHandlersForEventType(event.type);
     handlers.forEach(handler => handler(event));
   }
-
-  constructor() {}
 
   subscribe<T extends Event>(
     eventType: EventType<T>,
