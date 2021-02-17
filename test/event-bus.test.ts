@@ -1,4 +1,5 @@
 import EventBus from '../src/event-bus';
+import {createEventBus} from "../src";
 
 describe('EventBus', () => {
   beforeEach(() => {
@@ -78,5 +79,22 @@ describe('EventBus', () => {
     expect(fn).toBeCalledTimes(2);
     expect(fn).toBeCalledWith(event1);
     expect(fn).toBeCalledWith(event2);
+  });
+
+  it('should not call an event type\'s handlers if the subscriptions have been flushed', () => {
+    const event = { type: 'My Event'};
+    const fn1 = jest.fn();
+    const fn2 = jest.fn();
+
+    const eventBus = createEventBus();
+    eventBus.subscribe(event.type, fn1);
+    eventBus.subscribe(event.type, fn2);
+    eventBus.flush(event.type);
+    eventBus.emit(event);
+
+    jest.runAllTimers();
+
+    expect(fn1).toBeCalledTimes(0);
+    expect(fn2).toBeCalledTimes(0);
   });
 });

@@ -94,6 +94,12 @@ class EventBus {
   emitSync<T extends Event>(event: T) {
     this.executeHandlers(event);
   }
+
+  flush<T extends Event>(eventType: EventType<T>) {
+    const tokens = this.getEventTypeTokens(eventType);
+    this.eventTypeToTokensMap.delete(eventType);
+    tokens.forEach(token => this.tokenToHandlerMap.delete(token))
+  }
 }
 
 export default EventBus;
