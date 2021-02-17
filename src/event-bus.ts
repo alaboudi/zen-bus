@@ -100,6 +100,11 @@ class EventBus {
     this.eventTypeToTokensMap.delete(eventType);
     tokens.forEach(token => this.tokenToHandlerMap.delete(token))
   }
+
+  flushAll() {
+    this.eventTypeToTokensMap.clear();
+    this.tokenToHandlerMap.clear();
+  }
 }
 
 export default EventBus;

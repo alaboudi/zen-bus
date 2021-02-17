@@ -34,9 +34,7 @@ describe('EventBus', () => {
     eventBus.emit(event);
     expect(fn1).toBeCalledTimes(0);
     expect(fn2).toBeCalledTimes(0);
-
     jest.runAllTimers();
-
     expect(fn1).toBeCalledWith(event);
     expect(fn1).toBeCalledTimes(1);
     expect(fn2).toBeCalledWith(event);
@@ -69,13 +67,10 @@ describe('EventBus', () => {
     const event2 = { type: 'Event 2' };
     const eventBus = new EventBus();
     const fn = jest.fn();
-
     eventBus.subscribe(EventBus.ANY_EVENT_TYPE, fn);
     eventBus.emit(event1);
     eventBus.emit(event2);
-
     jest.runAllTimers();
-
     expect(fn).toBeCalledTimes(2);
     expect(fn).toBeCalledWith(event1);
     expect(fn).toBeCalledWith(event2);
@@ -85,15 +80,28 @@ describe('EventBus', () => {
     const event = { type: 'My Event'};
     const fn1 = jest.fn();
     const fn2 = jest.fn();
-
     const eventBus = createEventBus();
     eventBus.subscribe(event.type, fn1);
     eventBus.subscribe(event.type, fn2);
     eventBus.flush(event.type);
     eventBus.emit(event);
-
     jest.runAllTimers();
+    expect(fn1).toBeCalledTimes(0);
+    expect(fn2).toBeCalledTimes(0);
+  });
 
+  it('should not call any event type handler if all subscriptions have been flushed', () => {
+    const event1 = { type: 'Event1'};
+    const event2 = { type: 'Event2'};
+    const fn1 = jest.fn();
+    const fn2 = jest.fn();
+    const eventBus = createEventBus();
+    eventBus.subscribe(event1.type, fn1);
+    eventBus.subscribe(event2.type, fn2);
+    eventBus.flushAll();
+    eventBus.emit(event1);
+    eventBus.emit(event2);
+    jest.runAllTimers();
     expect(fn1).toBeCalledTimes(0);
     expect(fn2).toBeCalledTimes(0);
   });
